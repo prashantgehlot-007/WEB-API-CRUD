@@ -1,0 +1,171 @@
+﻿@model webapiJq.Models.Emp
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <table id="table">
+        <tr>
+            <td>Employee Code</td>
+            <td>@Html.TextBoxFor(Model => Model.ECode)</td>
+        </tr>
+        <tr>
+            <td>Employee Name</td>
+            <td>@Html.TextBoxFor(Model => Model.EName)</td>
+        </tr>
+        <tr>
+            <td>Employee Salary</td>
+            <td>@Html.TextBoxFor(Model => Model.ESal)</td>
+        </tr>
+        <tr>
+            <td>
+                <input type="submit" name="btsave" id="btsave" value="Save" />
+                <input type="submit" name="btnsearch" id="btnsearch" value="Search" />
+
+            
+                <input type="submit" name="btnUpdate" id="btnUpdate" value="Update" />
+                <input type="submit" name="btndelete" id="btndelete" value="delete" />
+                <input type="submit" name="btnshow" id="btnshow" value="ShowAll" />
+
+            </td>
+        </tr>
+        <tr>
+        <td>
+            <div id="mytabdiv"></div>
+        </td>
+        </tr>
+    </table>
+   
+ <style>
+        mytabdiv {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+
+@section scripts
+{
+    <script>
+        $("#btsave").click(function () {
+
+            var obj = {
+                "ECode": $("#ECode").val(),
+                "EName": $("#EName").val(),
+                "ESal": $("#ESal").val()
+            };
+            $.ajax({
+                type: "POST",
+                url: "/api/Employee",
+                data: JSON.stringify(obj),
+                datatype: "json",
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    alert("Data Saved");
+                },
+                error: function () {
+                    alert("Error occoured");
+                }
+            });
+        });
+
+        $("#btnsearch").click(function () {
+            var id = $('#ECode').val();
+            $.ajax({
+                type: "GET",
+                url: "/api/Employee?id=" + id,
+                datatype: "json",
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    $('#ECode').val(data.ECode),
+                        $('#EName').val(data.EName),
+                        $('#ESal').val(data.ESal)
+
+                },
+                error: function () {
+                    alert("Error occoured");
+                }
+            });
+        });
+
+        $("#btnUpdate").click(function () {
+
+            var obj = {
+                "ECode": $("#ECode").val(),
+                "EName": $("#EName").val(),
+                "ESal": $("#ESal").val()
+            };
+            $.ajax({
+                type: "PUT",
+                url: "/api/Employee",
+                data: JSON.stringify(obj),
+                datatype: "json",
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    alert("Data Updated");
+                },
+                error: function () {
+                    alert("Error occoured");
+                }
+            });
+        });
+
+        $("#btndelete").click(function () {
+            var id = $('#ECode').val();
+            $.ajax({
+                type: "DELETE",
+                url: "/api/Employee?id=" + id,
+                datatype: "json",
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    alert("data deleted");
+                    $('#ECode').val(""),
+                        $('#EName').val(""),
+                        $('#ESal').val("")
+
+                },
+                error: function () {
+                    alert("Error occoured");
+                }
+            });
+        });
+
+        $("#btnshow").click(function () {
+
+            var mytable = "<table border = '1'>";
+            mytable += "<tr><th>EmpCode</th><th>EmpName</th><th>EmpSalary</th></tr>"
+            $.ajax({
+                type: "GET",
+                url: "/api/Employee",
+                //data: JSON.stringify(obj),
+                datatype: "json",
+                contentType: 'application/json;charset=utf-8',
+                success: function (data) {
+                    $.each(data, function (i, d) {
+                        mytable += "<tr><td> " + d.ECode + " </td><td> " + d.EName + " </td><td>" + d.ESal + "</td></tr>";
+                    });
+                    mytable += "</table>";
+                    $('#mytabdiv').html(mytable);
+                },
+                error: function () {
+                    alert("Error occoured");
+                }
+            });
+        });
+    </script>
+}
+
